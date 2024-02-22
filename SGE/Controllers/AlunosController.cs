@@ -24,16 +24,18 @@ namespace SGE.Controllers
         // GET: Alunos
         public async Task<IActionResult> Index()
         {
-
+            //Verifica se existe algum email logado
             if (HttpContext.Session.GetString("email") == null)
             {
                 return RedirectToAction("Login", "Home");
             }
             else
             {
+                //Se existir email, vai recuperar o email e pegar os dados (usuário)
                 string Email = HttpContext.Session.GetString("email");
                 var usuario = _context.Usuarios.Where(a => a.Email == Email).FirstOrDefault();
                 Guid idTipoAluno = _context.TiposUsuario.Where(a => a.Tipo == "Aluno").FirstOrDefault().TipoUsuarioId;
+                //Se o usuário for aluno, acesso negado
                 if (usuario.TipoUsuarioId == idTipoAluno)
                 {
                     return RedirectToAction("AcessoNegado", "Home");
@@ -137,6 +139,13 @@ namespace SGE.Controllers
                     }
                     aluno.UrlFoto = newFileName; // Atualiza o campo UrlFoto com o novo nome do arquivo
                 }
+
+                aluno.CadAtivo = true;
+                aluno.DataCadastro = DateTime.Now;
+                TipoUsuario tipoUsuario = _context.TiposUsuario.Where(a => a.Tipo == "Aluno").FirstOrDefault();
+                aluno.TipoUsuarioId = tipoUsuario.TipoUsuarioId;
+                aluno.TipoUsuario = tipoUsuario;
+
                 _context.Add(aluno);
                 await _context.SaveChangesAsync();
                 Usuario usuario = new Usuario();
