@@ -22,7 +22,7 @@ namespace SGE.Controllers
         }
 
         // GET: Alunos
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Guid?id)
         {
 
             if (HttpContext.Session.GetString("email") == null)
@@ -40,6 +40,7 @@ namespace SGE.Controllers
                 }
             }
             var sGEContext = _context.Alunos.Include(a => a.TipoUsuario);
+
             return View(await sGEContext.ToListAsync());
         }
 
