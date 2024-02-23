@@ -24,18 +24,16 @@ namespace SGE.Controllers
         // GET: Alunos
         public async Task<IActionResult> Index()
         {
-            //Verifica se existe algum email logado
+
             if (HttpContext.Session.GetString("email") == null)
             {
                 return RedirectToAction("Login", "Home");
             }
             else
             {
-                //Se existir email, vai recuperar o email e pegar os dados (usuário)
                 string Email = HttpContext.Session.GetString("email");
                 var usuario = _context.Usuarios.Where(a => a.Email == Email).FirstOrDefault();
                 Guid idTipoAluno = _context.TiposUsuario.Where(a => a.Tipo == "Aluno").FirstOrDefault().TipoUsuarioId;
-                //Se o usuário for aluno, acesso negado
                 if (usuario.TipoUsuarioId == idTipoAluno)
                 {
                     return RedirectToAction("AcessoNegado", "Home");
@@ -96,8 +94,9 @@ namespace SGE.Controllers
                     return RedirectToAction("AcessoNegado", "Home");
                 }
             }
-
-            ViewData["TipoUsuarioId"] = new SelectList(_context.TiposUsuario, "TipoUsuarioId", "TipoUsuarioId");
+            Guid idTipo = _context.TiposUsuario.Where(a => a.Tipo == "Aluno")
+                                               .FirstOrDefault().TipoUsuarioId;
+            ViewData["TipoUsuarioId"] = idTipo;
             return View();
         }
 
@@ -106,7 +105,10 @@ namespace SGE.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AlunoId,Matricula,AlunoNome,Email,Celular,Logradouro,Numero,Cidade,Estado,CEP,Senha,DataNascimento,CadAtivo,DataCadastro,CadInativo,TipoUsuarioId,UrlFoto")] Aluno aluno, string ConfirmeSenha, IFormFile UrlFoto)
+        public async Task<IActionResult> Create(
+            [Bind("AlunoId,Matricula,AlunoNome,Email,Celular,Logradouro,Numero,Cidade," +
+            "Estado,CEP,Senha,DataNascimento,CadAtivo,DataCadastro,CadInativo,TipoUsuario,TipoUsuarioId," +
+            "UrlFoto")] Aluno aluno, string ConfirmeSenha, IFormFile UrlFoto)
         {
 
             if (ModelState.IsValid)
@@ -142,7 +144,9 @@ namespace SGE.Controllers
 
                 aluno.CadAtivo = true;
                 aluno.DataCadastro = DateTime.Now;
-                TipoUsuario tipoUsuario = _context.TiposUsuario.Where(a => a.Tipo == "Aluno").FirstOrDefault();
+                TipoUsuario tipoUsuario = _context.TiposUsuario
+                    .Where(a => a.Tipo == "Aluno")
+                    .FirstOrDefault();
                 aluno.TipoUsuarioId = tipoUsuario.TipoUsuarioId;
                 aluno.TipoUsuario = tipoUsuario;
 
@@ -162,7 +166,9 @@ namespace SGE.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TipoUsuarioId"] = new SelectList(_context.TiposUsuario, "TipoUsuarioId", "TipoUsuarioId", aluno.TipoUsuarioId);
+            Guid idTipo = _context.TiposUsuario.Where(a => a.Tipo == "Aluno")
+                                               .FirstOrDefault().TipoUsuarioId;
+            ViewData["TipoUsuarioId"] = idTipo;
             return View(aluno);
         }
 
