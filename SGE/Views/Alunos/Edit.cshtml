@@ -25,8 +25,14 @@
     <div class="col-md-4">
         @if (ViewData["Imagem"] != null)
         {
-            <img src="data:image/png;base64,@ViewData["Imagem"]" alt="Foto do Perfil" />
+            <img src="data:image/png;base64,@ViewData["Imagem"]" alt="Foto do Perfil" height="100"/>
         }
+        <button class="btn btn-outline-secondary" id="alterarFoto">
+            Alterar Foto do Perfil
+        </button>
+        <form asp-action="AlterarFoto" id="formFoto" asp-route-id="@Model.AlunoId" method="post" enctype="multipart/form-data">
+            <input type="file" name="novaFoto" id="novaFoto" class="d-none form-control" />
+        </form>
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="AlunoId" />
@@ -124,6 +130,15 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<script>
+    document.getElementById("alterarFoto").addEventListener("click", function () {
+        documen.getElementById("novaFoto".classList.remove("d-none");
+    });
+    document.getElementById("alterarFoto").addEventListener("change", function () {
+        documen.getElementById("formFoto".submit();
+    });
+</script>
 
 @section Scripts {
     @{
