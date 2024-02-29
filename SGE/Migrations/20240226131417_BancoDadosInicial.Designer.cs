@@ -12,8 +12,8 @@ using SGE.Data;
 namespace SGE.Migrations
 {
     [DbContext(typeof(SGEContext))]
-    [Migration("20240222182218_teste")]
-    partial class teste
+    [Migration("20240226131417_BancoDadosInicial")]
+    partial class BancoDadosInicial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -84,7 +84,7 @@ namespace SGE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("TipoUsuarioId")
+                    b.Property<Guid?>("TipoUsuarioId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UrlFoto")
@@ -348,9 +348,7 @@ namespace SGE.Migrations
                 {
                     b.HasOne("SGE.Models.TipoUsuario", "TipoUsuario")
                         .WithMany("Alunos")
-                        .HasForeignKey("TipoUsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TipoUsuarioId");
 
                     b.Navigation("TipoUsuario");
                 });
